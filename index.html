@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyPro - Keyboard Practice</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stats-bar {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .practice-text {
+            background: #f8f9fa;
+            border: 2px solid var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            min-height: 80px;
+        }
+
+        .keyboard-container {
+            background: #2c3e50;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 8px;
+            gap: 4px;
+        }
+
+        .key {
+            background: linear-gradient(145deg, #34495e, #2c3e50);
+            border: 2px solid #4a5f7a;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            user-select: none;
+        }
+
+        .key:hover {
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            transform: translateY(-2px);
+        }
+
+        .key.active {
+            background: var(--accent-color) !important;
+            border-color: #c0392b;
+            transform: translateY(1px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .key.correct {
+            background: var(--success-color) !important;
+            border-color: #229954;
+            animation: correctPulse 0.3s ease;
+        }
+
+        .key.wrong {
+            background: var(--accent-color) !important;
+            border-color: #c0392b;
+            animation: wrongShake 0.3s ease;
+        }
+
+        @keyframes correctPulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes wrongShake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* Key sizes */
+        .key-normal {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .key-tab {
+            width: 60px;
+            height: 40px;
+            font-size: 12px;
+        }
+
+        .key-caps {
+            width: 70px;
+            height: 40px;
+            font-size: 12px;
+        }
+
+        .key-enter {
+            width: 90px;
+            height: 40px;
+            font-size: 12px;
+        }
+
+        .key-shift {
+            width: 100px;
+            height: 40px;
+            font-size: 12px;
+        }
+
+        .key-ctrl {
+            width: 60px;
+            height: 40px;
+            font-size: 11px;
+        }
+
+        .key-alt {
+            width: 50px;
+            height: 40px;
+            font-size: 12px;
+        }
+
+        .key-space {
+            width: 300px;
+            height: 40px;
+            font-size: 12px;
+        }
+
+        .key-backspace {
+            width: 80px;
+            height: 40px;
+            font-size: 11px;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-custom {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-start {
+            background: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-reset {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+
+        .current-key {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+
+        .progress-bar {
+            height: 10px;
+            border-radius: 5px;
+            background: var(--secondary-color);
+            margin: 20px 0;
+        }
+
+        .difficulty-selector {
+            margin: 20px 0;
+        }
+
+        .next-key-indicator {
+            background: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-keyboard"></i> KeyPro - Master Your Keyboard</h1>
+                <p class="text-muted">Professional keyboard practice with real-time feedback</p>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="row">
+                    <div class="col-md-3 stat-item">
+                        <span class="stat-value" id="wpm">0</span>
+                        <small>WPM</small>
+                    </div>
+                    <div class="col-md-3 stat-item">
+                        <span class="stat-value" id="accuracy">100%</span>
+                        <small>Accuracy</small>
+                    </div>
+                    <div class="col-md-3 stat-item">
+                        <span class="stat-value" id="timeLeft">60</span>
+                        <small>Time Left</small>
+                    </div>
+                    <div class="col-md-3 stat-item">
+                        <span class="stat-value" id="keysPressed">0</span>
+                        <small>Keys Pressed</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="difficulty-selector">
+                            <label class="form-label">Difficulty Level:</label>
+                            <select class="form-select" id="difficultySelect">
+                                <option value="beginner">Beginner - Basic Keys</option>
+                                <option value="intermediate" selected>Intermediate - All Letters</option>
+                                <option value="advanced">Advanced - Letters + Numbers</option>
+                                <option value="expert">Expert - All Characters</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-start btn-custom" id="startBtn">
+                            <i class="fas fa-play"></i> Start Practice
+                        </button>
+                        <button class="btn btn-reset btn-custom" id="resetBtn">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Key Indicator -->
+            <div class="next-key-indicator">
+                Next Key: <span id="nextKey">Press Start to begin</span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+
+            <!-- Practice Text Area -->
+            <div class="practice-text" id="practiceText">
+                Click "Start Practice" to begin your keyboard training session. The next key to press will be
+                highlighted below.
+            </div>
+
+            <!-- Virtual Keyboard -->
+            <div class="keyboard-container">
+                <!-- Row 1: Numbers and symbols -->
+                <div class="keyboard-row">
+                    <div class="key key-normal" data-key="`">~<br>`</div>
+                    <div class="key key-normal" data-key="1">!<br>1</div>
+                    <div class="key key-normal" data-key="2">@<br>2</div>
+                    <div class="key key-normal" data-key="3">#<br>3</div>
+                    <div class="key key-normal" data-key="4">$<br>4</div>
+                    <div class="key key-normal" data-key="5">%<br>5</div>
+                    <div class="key key-normal" data-key="6">^<br>6</div>
+                    <div class="key key-normal" data-key="7">&<br>7</div>
+                    <div class="key key-normal" data-key="8">*<br>8</div>
+                    <div class="key key-normal" data-key="9">(<br>9</div>
+                    <div class="key key-normal" data-key="0">)<br>0</div>
+                    <div class="key key-normal" data-key="-">_<br>-</div>
+                    <div class="key key-normal" data-key="=">=<br>=</div>
+                    <div class="key key-backspace" data-key="Backspace">Backspace</div>
+                </div>
+
+                <!-- Row 2: QWERTY top row -->
+                <div class="keyboard-row">
+                    <div class="key key-tab" data-key="Tab">Tab</div>
+                    <div class="key key-normal" data-key="q">Q</div>
+                    <div class="key key-normal" data-key="w">W</div>
+                    <div class="key key-normal" data-key="e">E</div>
+                    <div class="key key-normal" data-key="r">R</div>
+                    <div class="key key-normal" data-key="t">T</div>
+                    <div class="key key-normal" data-key="y">Y</div>
+                    <div class="key key-normal" data-key="u">U</div>
+                    <div class="key key-normal" data-key="i">I</div>
+                    <div class="key key-normal" data-key="o">O</div>
+                    <div class="key key-normal" data-key="p">P</div>
+                    <div class="key key-normal" data-key="[">{<br>[</div>
+                    <div class="key key-normal" data-key="]">}<br>]</div>
+                    <div class="key key-normal" data-key="\\">|<br>\</div>
+                </div>
+
+                <!-- Row 3: ASDF home row -->
+                <div class="keyboard-row">
+                    <div class="key key-caps" data-key="CapsLock">Caps Lock</div>
+                    <div class="key key-normal" data-key="a">A</div>
+                    <div class="key key-normal" data-key="s">S</div>
+                    <div class="key key-normal" data-key="d">D</div>
+                    <div class="key key-normal" data-key="f">F</div>
+                    <div class="key key-normal" data-key="g">G</div>
+                    <div class="key key-normal" data-key="h">H</div>
+                    <div class="key key-normal" data-key="j">J</div>
+                    <div class="key key-normal" data-key="k">K</div>
+                    <div class="key key-normal" data-key="l">L</div>
+                    <div class="key key-normal" data-key=";">:<br>;</div>
+                    <div class="key key-normal" data-key="'">"<br>'</div>
+                    <div class="key key-enter" data-key="Enter">Enter</div>
+                </div>
+
+                <!-- Row 4: ZXCV bottom row -->
+                <div class="keyboard-row">
+                    <div class="key key-shift" data-key="Shift">Shift</div>
+                    <div class="key key-normal" data-key="z">Z</div>
+                    <div class="key key-normal" data-key="x">X</div>
+                    <div class="key key-normal" data-key="c">C</div>
+                    <div class="key key-normal" data-key="v">V</div>
+                    <div class="key key-normal" data-key="b">B</div>
+                    <div class="key key-normal" data-key="n">N</div>
+                    <div class="key key-normal" data-key="m">M</div>
+                    <div class="key key-normal" data-key=","><br>,</div>
+                    <div class="key key-normal" data-key=".">><br>.</div>
+                    <div class="key key-normal" data-key="/">?<br>/</div>
+                    <div class="key key-shift" data-key="Shift">Shift</div>
+                </div>
+
+                <!-- Row 5: Space bar row -->
+                <div class="keyboard-row">
+                    <div class="key key-ctrl" data-key="Control">Ctrl</div>
+                    <div class="key key-alt" data-key="Alt">Alt</div>
+                    <div class="key key-space" data-key=" ">Space</div>
+                    <div class="key key-alt" data-key="Alt">Alt</div>
+                    <div class="key key-ctrl" data-key="Control">Ctrl</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="text-center py-3 mt-4" style="background-color: #f8f9fa;">
+        <p class="mb-0">&copy; 2025 KeyPro. All Rights Reserved.</p>
+        <p class="mb-0">
+            Developed by
+            <a href="https://akashkvdev.github.io/akashkv.dev/" target="_blank" style="text-decoration: none;">
+                Akash Kumar
+            </a>
+
+        </p>
+    </footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        class KeyboardPractice {
+            constructor() {
+                this.isActive = false;
+                this.currentKey = '';
+                this.sequence = [];
+                this.currentIndex = 0;
+                this.correctKeys = 0;
+                this.totalKeys = 0;
+                this.startTime = null;
+                this.timeLimit = 60;
+                this.timer = null;
+
+                this.difficulties = {
+                    beginner: 'asdf jkl;',
+                    intermediate: 'abcdefghijklmnopqrstuvwxyz',
+                    advanced: 'abcdefghijklmnopqrstuvwxyz1234567890',
+                    expert: 'abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()_+-=[]{}|;:\'\",./<>?'
+                };
+
+                this.initializeElements();
+                this.setupEventListeners();
+                this.generateSequence();
+            }
+
+            initializeElements() {
+                this.startBtn = document.getElementById('startBtn');
+                this.resetBtn = document.getElementById('resetBtn');
+                this.difficultySelect = document.getElementById('difficultySelect');
+                this.practiceText = document.getElementById('practiceText');
+                this.nextKeyElement = document.getElementById('nextKey');
+                this.wpmElement = document.getElementById('wpm');
+                this.accuracyElement = document.getElementById('accuracy');
+                this.timeLeftElement = document.getElementById('timeLeft');
+                this.keysPressedElement = document.getElementById('keysPressed');
+                this.progressBar = document.getElementById('progressBar');
+                this.keys = document.querySelectorAll('.key');
+            }
+
+            setupEventListeners() {
+                this.startBtn.addEventListener('click', () => this.togglePractice());
+                this.resetBtn.addEventListener('click', () => this.resetPractice());
+                document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+
+                // Virtual keyboard clicks
+                this.keys.forEach(key => {
+                    key.addEventListener('click', () => {
+                        if (this.isActive) {
+                            const keyValue = key.dataset.key === ' ' ? ' ' : key.dataset.key.toLowerCase();
+                            this.processKeyPress(keyValue);
+                        }
+                    });
+                });
+            }
+
+            generateSequence() {
+                const difficulty = this.difficultySelect.value;
+                const chars = this.difficulties[difficulty];
+                this.sequence = [];
+
+                for (let i = 0; i < 100; i++) {
+                    this.sequence.push(chars[Math.floor(Math.random() * chars.length)]);
+                }
+
+                this.updatePracticeText();
+            }
+
+            updatePracticeText() {
+                let text = '';
+                for (let i = 0; i < Math.min(50, this.sequence.length); i++) {
+                    const char = this.sequence[i];
+                    if (i === this.currentIndex) {
+                        text += `<span class="current-key">${char === ' ' ? '⌘' : char.toUpperCase()}</span>`;
+                    } else if (i < this.currentIndex) {
+                        text += `<span style="color: #27ae60; font-weight: bold;">${char === ' ' ? '⌘' : char.toUpperCase()}</span>`;
+                    } else {
+                        text += char === ' ' ? '⌘' : char.toUpperCase();
+                    }
+                    text += ' ';
+                }
+                this.practiceText.innerHTML = text;
+            }
+
+            togglePractice() {
+                if (this.isActive) {
+                    this.stopPractice();
+                } else {
+                    this.startPractice();
+                }
+            }
+
+            startPractice() {
+                this.isActive = true;
+                this.startTime = Date.now();
+                this.currentIndex = 0;
+                this.correctKeys = 0;
+                this.totalKeys = 0;
+                this.currentKey = this.sequence[0];
+
+                this.startBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                this.startBtn.classList.remove('btn-start');
+                this.startBtn.classList.add('btn-warning');
+
+                this.generateSequence();
+                this.updateNextKey();
+                this.updatePracticeText();
+                this.startTimer();
+            }
+
+            stopPractice() {
+                this.isActive = false;
+                clearInterval(this.timer);
+
+                this.startBtn.innerHTML = '<i class="fas fa-play"></i> Start Practice';
+                this.startBtn.classList.remove('btn-warning');
+                this.startBtn.classList.add('btn-start');
+
+                this.clearKeyHighlights();
+            }
+
+            resetPractice() {
+                this.stopPractice();
+                this.currentIndex = 0;
+                this.correctKeys = 0;
+                this.totalKeys = 0;
+                this.timeLimit = 60;
+                this.timeLeftElement.textContent = '60';
+                this.wpmElement.textContent = '0';
+                this.accuracyElement.textContent = '100%';
+                this.keysPressedElement.textContent = '0';
+                this.progressBar.style.width = '0%';
+                this.nextKeyElement.textContent = 'Press Start to begin';
+                this.generateSequence();
+                this.practiceText.textContent = 'Click "Start Practice" to begin your keyboard training session.';
+            }
+
+            startTimer() {
+                this.timer = setInterval(() => {
+                    this.timeLimit--;
+                    this.timeLeftElement.textContent = this.timeLimit;
+
+                    if (this.timeLimit <= 0) {
+                        this.stopPractice();
+                        alert(`Time's up! Final Stats:\nWPM: ${this.calculateWPM()}\nAccuracy: ${this.calculateAccuracy()}%`);
+                    }
+                }, 1000);
+            }
+
+            handleKeyPress(event) {
+                if (!this.isActive) return;
+
+                event.preventDefault();
+                let key = event.key.toLowerCase();
+
+                // Handle special keys
+                if (key === ' ') key = ' ';
+
+                this.processKeyPress(key);
+            }
+
+            processKeyPress(key) {
+                if (!this.isActive) return;
+
+                this.totalKeys++;
+                this.keysPressedElement.textContent = this.totalKeys;
+
+                const expectedKey = this.sequence[this.currentIndex];
+                const keyElement = document.querySelector(`[data-key="${key}"]`) ||
+                    document.querySelector(`[data-key="${key.toUpperCase()}"]`);
+
+                if (key === expectedKey) {
+                    this.correctKeys++;
+                    this.currentIndex++;
+
+                    if (keyElement) {
+                        keyElement.classList.add('correct');
+                        setTimeout(() => keyElement.classList.remove('correct'), 300);
+                    }
+
+                    this.updatePracticeText();
+                    this.updateNextKey();
+                    this.updateProgress();
+
+                    if (this.currentIndex >= this.sequence.length) {
+                        this.generateSequence();
+                        this.currentIndex = 0;
+                    }
+                } else {
+                    if (keyElement) {
+                        keyElement.classList.add('wrong');
+                        setTimeout(() => keyElement.classList.remove('wrong'), 300);
+                    }
+                }
+
+                this.updateStats();
+            }
+
+            updateNextKey() {
+                if (this.currentIndex < this.sequence.length) {
+                    const nextKey = this.sequence[this.currentIndex];
+                    this.nextKeyElement.textContent = nextKey === ' ' ? 'SPACE' : nextKey.toUpperCase();
+                    this.highlightKey(nextKey);
+                }
+            }
+
+            highlightKey(key) {
+                this.clearKeyHighlights();
+                const keyElement = document.querySelector(`[data-key="${key}"]`) ||
+                    document.querySelector(`[data-key="${key.toUpperCase()}"]`);
+                if (keyElement) {
+                    keyElement.classList.add('active');
+                }
+            }
+
+            clearKeyHighlights() {
+                this.keys.forEach(key => {
+                    key.classList.remove('active', 'correct', 'wrong');
+                });
+            }
+
+            updateStats() {
+                this.wpmElement.textContent = this.calculateWPM();
+                this.accuracyElement.textContent = this.calculateAccuracy() + '%';
+            }
+
+            calculateWPM() {
+                if (!this.startTime) return 0;
+                const timeElapsed = (Date.now() - this.startTime) / 1000 / 60; // in minutes
+                const wordsTyped = this.correctKeys / 5; // standard: 5 characters = 1 word
+                return Math.round(wordsTyped / timeElapsed) || 0;
+            }
+
+            calculateAccuracy() {
+                if (this.totalKeys === 0) return 100;
+                return Math.round((this.correctKeys / this.totalKeys) * 100);
+            }
+
+            updateProgress() {
+                const progress = (this.currentIndex / 50) * 100; // Progress based on first 50 chars
+                this.progressBar.style.width = Math.min(progress, 100) + '%';
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new KeyboardPractice();
+        });
+    </script>
+</body>
+
+</html>
